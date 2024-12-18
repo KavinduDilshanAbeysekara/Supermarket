@@ -7,40 +7,42 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.persistence.CascadeType;
+import java.time.LocalDateTime;
+import java.util.List;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+@Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
 @Table(name = "orders")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
 public class Order {
     @Id
-    private String orderNumber = UUID.randomUUID().toString();
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private LocalDateTime orderDateTime;
     private Double totalPrice;
-    private LocalDateTime orderTime;
-    private String deliveryStatus;
-
-    @ManyToMany(targetEntity = Product.class, fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private List<Product> products = new ArrayList<>();
-
-    public Order(String orderNumber, Double totalPrice, LocalDateTime orderTime, String deliveryStatus) {
-        this.orderNumber = orderNumber;
-        this.totalPrice = totalPrice;
-        this.orderTime = orderTime;
-        this.deliveryStatus = deliveryStatus;
+    @PrePersist //executes before the entity is created
+    protected void onCreate() {
+        if(this.orderDateTime == null) {
+            this.orderDateTime = LocalDateTime.now();
+        }
     }
-
+    @ManyToMany
+    @JoinTable(
+        name = "order_product",
+        joinColumns = @JoinColumn(name = "orderId"),
+        inverseJoinColumns = @JoinColumn(name = "productId")
+    )
+    private List<Product> orderedProducts;
+    
 }
