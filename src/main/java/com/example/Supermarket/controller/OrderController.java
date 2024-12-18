@@ -1,52 +1,54 @@
 package com.example.Supermarket.controller;
 
-
-import com.example.Supermarket.entity.Order;
-import com.example.Supermarket.service.OrderService;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import com.example.Supermarket.dto.OrderDTO;
+import com.example.Supermarket.entity.Order;
+import com.example.Supermarket.entity.Product;
+import com.example.Supermarket.service.OrderService;
+import com.example.Supermarket.service.ProductService;
 @RestController
-@RequestMapping("/orders")
 public class OrderController {
-    private final OrderService orderService;
-
+    
     @Autowired
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
+    private OrderService orderService;
+    @Autowired
+    private ProductService productService;
+    @GetMapping("/orders")
+    public ResponseEntity<List<Order>> getAllOrders() {
+        List<Order> orders = orderService.getAllOrders();
+        return ResponseEntity.status(200).body(orders);
     }
-
-    @GetMapping("/list")
-    public ResponseEntity<List<Order>> list() {
-        List<Order> orders = orderService.findAllOrders();
-        return ResponseEntity.ok(orders);
-    }
-
-    @PostMapping("/save")
-    public ResponseEntity<Order> save(@RequestBody Order order) {
-        Order savedOrder = orderService.addOrder(order);
-        return ResponseEntity.ok(savedOrder);
-    }
-
-    @PutMapping("/update")
-    public ResponseEntity<Order> update(@RequestBody Order order) {
-        Order updatedOrder = orderService.updateOrder(order);
-        return ResponseEntity.ok(updatedOrder);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable(name = "id") String orderId) {
-        orderService.deleteOrder(orderId);
-        return ResponseEntity.ok("Order successfully deleted.");
-    }
-
-    @GetMapping("/getBy/{id}")
-    public ResponseEntity<Order> getById(@PathVariable(name = "id") String orderId) {
-        Order order = orderService.getOrderByOrderNumber(orderId);
-        return ResponseEntity.ok(order);
+    @PostMapping("/orders")
+    public ResponseEntity<Order> createOrder(@RequestBody OrderDTO orderDTO) {
+        Order order = new Order();
+        order.setTotalPrice(0.0);
+        
+        //get product Ids from order dto to productIds array
+        List<Long> productIds = orderDTO.getProductIds();
+        List<Product> orderedProducts = new ArrayList<>();
+        productIds.forEach(productId -> {
+            //get product by the product Id
+            Product product = productService.getProductById(productId);
+            //add this product to order
+            if(product != null) {
+                orderedProducts.add(product);
+                //set order's total price
+                order.setTotalPrice(order.getTotalPrice() + product.getPrice());
+            }            
+        });
+        
+        order.setOrderedProducts(orderedProducts);
+        
+        //save the order in DB
+        orderService.createOrder(order);
+        return ResponseEntity.status(201).body(order);
     }
 }
 
