@@ -1,26 +1,40 @@
 package com.example.Supermarket.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.ManyToMany;
 
-import java.util.UUID;
+@Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table(name = "products")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
+    
     @Id
-    private String id = UUID.randomUUID().toString();
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false)
     private String name;
+
     private Double price;
+
+    private String description;
+    
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "orderedProducts")
+    private List<Order> orders;
 }
+
