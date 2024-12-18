@@ -1,18 +1,10 @@
 package com.example.Supermarket.service;
 
 import java.util.List;
-
+import org.springframework.stereotype.Service;
 import com.example.Supermarket.entity.Order;
-
+@Service
 public interface OrderService {
-    List<Order> findAllOrders();
-
-    Order addOrder(Order order);
-
-    void deleteOrder(String orderId);
-
-    Order updateOrder(Order order);
-
-    Order getOrderByOrderNumber(String orderNumber);
-
+    List<Order> getAllOrders();
+    Order createOrder(Order order);
 }
