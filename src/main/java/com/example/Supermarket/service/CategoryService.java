@@ -2,16 +2,13 @@ package com.example.Supermarket.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.example.Supermarket.entity.Category;
-import com.example.Supermarket.entity.Product;
 
+@Service
 public interface CategoryService {
-
- List<Category> findAllCategories();
- Category addCategory(Category category);
- String deleteCategory(String CategoryId);
- Category updateCategory(Category category);
- Category getCategoryById(String categoryId);
-String addProductsInCategory(String categoryId, List<Product> productList);   
-    
+    List<Category> getAllCategories();
+    Category createCategory(Category category);
+    Category getCategoryById(Long id);
 } 
