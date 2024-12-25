@@ -17,7 +17,7 @@ public interface ProductService {
 
     Product updateProduct(Product updatedProduct);
 
-    Product getProductById(String productId);
+    Product getProductById(Long productId);
 
     Order purchaseProducts(Integer userId, List<ProductDTO> productsList);
 }

@@ -2,57 +2,70 @@ package com.example.Supermarket.controller;
 
 
 
-import com.example.Supermarket.dto.ProductDTO;
-import com.example.Supermarket.entity.Product;
-import com.example.Supermarket.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.Supermarket.dto.ProductReqDTO;
+import com.example.Supermarket.entity.Category;
+import com.example.Supermarket.entity.Product;
+import com.example.Supermarket.service.CategoryService;
+import com.example.Supermarket.service.ProductService;
+
 @RestController
-@RequestMapping("/products")
 public class ProductController {
-    private final ProductService productService;
+    
+    @Autowired
+    private ProductService productService;
 
     @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
+    private CategoryService categoryService;
+
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+
+        return ResponseEntity.status(200).body(products);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<Product>> list() {
-        return ResponseEntity.ok(productService.findAllProducts());
+    @PostMapping("/products")
+    public ResponseEntity<Product> createProduct(@RequestBody ProductReqDTO productReqDTO) {
+        Product product = new Product();
+        product.setName(productReqDTO.getName());
+        product.setPrice(productReqDTO.getPrice());
+        product.setDescription(productReqDTO.getDescription());
+
+        //find category by categoryId in productReqDTO and assign it to new Product.
+        Category category = categoryService.getCategoryById(productReqDTO.getCategoryId());
+        product.setCategory(category);
+
+        Product createdProduct = productService.createProduct(product);
+
+        return ResponseEntity.status(201).body(createdProduct);
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<Product> save(@RequestBody Product product) {
-        return ResponseEntity.ok(productService.addProduct(product));
-    }
+    @PutMapping("/products/{productId}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long productId, ProductReqDTO productReqDTO) {
+        Product product = new Product();
+        product.setName(productReqDTO.getName());
+        product.setPrice(productReqDTO.getPrice());
+        product.setDescription(productReqDTO.getDescription());
 
-    @PutMapping("/update")
-    public ResponseEntity<Product> update(@RequestBody Product product) {
-        return ResponseEntity.ok(productService.updateProduct(product));
-    }
+        //find category by categoryId in productReqDTO and assign it to new Product.
+        Category category = categoryService.getCategoryById(productReqDTO.getCategoryId());
+        product.setCategory(category);
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable(name = "id") String productId) {
-        productService.deleteProduct(productId);
-        return ResponseEntity.ok("Product successfully deleted.");
-    }
+        Product updatedProduct = productService.updateProduct(productId, product);
 
-    @GetMapping("/getBy/{id}")
-    public ResponseEntity<Product> getById(@PathVariable(name = "id") String productId) {
-        return ResponseEntity.ok(productService.getProductById(productId));
-    }
+        return ResponseEntity.status(200).body(updatedProduct);
 
-    @PostMapping("/purchase")
-    public ResponseEntity<String> purchase(
-            @RequestParam(name = "userId") Integer userId,
-            @RequestBody List<ProductDTO> productList) {
-        productService.purchaseProducts(userId, productList);
-        return ResponseEntity.ok("Products successfully purchased.");
     }
 }
-
