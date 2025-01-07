@@ -1,14 +1,8 @@
 package com.example.Supermarket.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import java.time.LocalDateTime;
-import java.util.List;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,23 +14,28 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+
 @Entity
 @Getter
 @Setter
 @Table(name = "orders")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     private LocalDateTime orderDateTime;
+
     private Double totalPrice;
+
     @PrePersist //executes before the entity is created
     protected void onCreate() {
         if(this.orderDateTime == null) {
             this.orderDateTime = LocalDateTime.now();
         }
     }
+
     @ManyToMany
     @JoinTable(
         name = "order_product",

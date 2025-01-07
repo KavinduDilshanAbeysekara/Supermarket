@@ -3,7 +3,7 @@ package com.example.Supermarket.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
 
@@ -17,11 +17,11 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    //private PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public User createUser(User user) {
-        //user.setPassword(passwordEncoder.encode(user.getPassword())); //encode the password, so that it is not human readable
+        user.setPassword(passwordEncoder.encode(user.getPassword())); //encode the password, so that it is not human readable
 
         return userRepository.save(user);
     }
