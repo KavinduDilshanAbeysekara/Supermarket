@@ -1,4 +1,4 @@
-package com.ijse.springintro.dto;
+package com.example.Supermarket.dto;
 
 import lombok.Getter;
 import lombok.Setter;
