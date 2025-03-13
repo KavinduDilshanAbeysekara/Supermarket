@@ -1,24 +1,16 @@
 package com.example.Supermarket.service;
 
-
-
-import com.example.Supermarket.dto.ProductDTO;
-import com.example.Supermarket.entity.Order;
-import com.example.Supermarket.entity.Product;
-
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+import com.example.Supermarket.entity.Product;
+
+@Service
 public interface ProductService {
-    List<Product> findAllProducts();
-
-    Product addProduct(Product product);
-
-    void deleteProduct(String productId);
-
-    Product updateProduct(Product updatedProduct);
-
-    Product getProductById(String productId);
-
-    Order purchaseProducts(Integer userId, List<ProductDTO> productsList);
+    List<Product> getAllProducts();
+    Product createProduct(Product product);
+    Product updateProduct(Long id, Product product);
+    Product getProductById(Long id);
+    void deleteProduct(Long id);
 }
-

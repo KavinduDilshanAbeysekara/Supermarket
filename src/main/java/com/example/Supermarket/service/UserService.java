@@ -1,16 +1,12 @@
 package com.example.Supermarket.service;
 
-import java.util.List;
 
-import com.example.Supermarket.entity.Order;
+
+import org.springframework.stereotype.Service;
+
 import com.example.Supermarket.entity.User;
 
+@Service
 public interface UserService {
-    List<User> findAllUsers();
-    User addNewUser(User user);
-    void deleteUserById(Integer userId);
-    void deleteUser(User user);
-    User updateUser(User updatedUser);
-    User getUserById(Integer userId);
-    List<Order> getOrdersByUserId(Integer userId);
+    User createUser(User user);
 }
