@@ -8,7 +8,7 @@ import com.ijse.springintro.repository.StockRepository;
 
 import java.util.List;
 
-@Service
+@Service // seivice
 public class StockServiceImpl implements StockService {
 
     @Autowired
